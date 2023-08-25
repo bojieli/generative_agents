@@ -9,6 +9,7 @@ Note (March 10, 2023) -- Defunct
 """
 import re
 import datetime
+import random
 import string
 
 from gen_agents.persona.prompt_template.gpt_structure import (
@@ -16,6 +17,7 @@ from gen_agents.persona.prompt_template.gpt_structure import (
     safe_generate_response,
 )
 from gen_agents.persona.prompt_template.print_prompt import *
+from gen_agents.utils import debug
 
 
 def get_random_alphanumeric(i=6, j=6):

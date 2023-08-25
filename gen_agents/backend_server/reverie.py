@@ -26,11 +26,13 @@ import os
 import shutil
 import traceback
 
-from gen_agents.persona.persona import *
-
 from gen_agents import maze
-from gen_agents.global_methods import check_if_file_exists, copyanything
-from gen_agents.utils import fs_storage, fs_temp_storage
+
+from gen_agents.persona.cognitive_modules.converse import load_history_via_whisper
+from gen_agents.persona.persona import Persona
+
+from gen_agents.global_methods import check_if_file_exists, copyanything, read_file_to_list
+from gen_agents.utils import fs_storage, fs_temp_storage, maze_assets_loc
 
 ##############################################################################
 #                                  REVERIE                                   #
@@ -140,15 +142,11 @@ class ReverieServer:
     # used to communicate the code and step information to the frontend.
     # Note that step file is removed as soon as the frontend opens up the
     # simulation.
-    curr_sim_code = dict()
-    curr_sim_code["sim_code"] = self.sim_code
     with open(f"{fs_temp_storage}/curr_sim_code.json", "w") as outfile:
-      outfile.write(json.dumps(curr_sim_code, indent=2))
+      outfile.write(json.dumps({"sim_code": self.sim_code}, indent=2))
 
-    curr_step = dict()
-    curr_step["step"] = self.step
     with open(f"{fs_temp_storage}/curr_step.json", "w") as outfile:
-      outfile.write(json.dumps(curr_step, indent=2))
+      outfile.write(json.dumps({"step":self.step}, indent=2))
 
 
   def save(self):
@@ -166,17 +164,17 @@ class ReverieServer:
     sim_folder = f"{fs_storage}/{self.sim_code}"
 
     # Save Reverie meta information.
-    reverie_meta = dict()
-    reverie_meta["fork_sim_code"] = self.fork_sim_code
-    reverie_meta["start_date"] = self.start_time.strftime("%B %d, %Y")
-    reverie_meta["curr_time"] = self.curr_time.strftime("%B %d, %Y, %H:%M:%S")
-    reverie_meta["sec_per_step"] = self.sec_per_step
-    reverie_meta["maze_name"] = self.maze.maze_name
-    reverie_meta["persona_names"] = list(self.personas.keys())
-    reverie_meta["step"] = self.step
-    reverie_meta_f = f"{sim_folder}/reverie/meta.json"
-    with open(reverie_meta_f, "w") as outfile:
-      outfile.write(json.dumps(reverie_meta, indent=2))
+    reverie_meta = {
+      "fork_sim_code": self.fork_sim_code,
+      "start_date": self.start_time.strftime("%B %d, %Y"),
+      "curr_time": self.curr_time.strftime("%B %d, %Y, %H:%M:%S"),
+      "sec_per_step": self.sec_per_step,
+      "maze_name": self.maze.maze_name,
+      "persona_names": list(self.personas.keys()),
+      "step": self.step,
+    }
+    with open(f"{sim_folder}/reverie/meta.json", "w") as outfile:
+      json.dump(reverie_meta, outfile, indent=2)
 
     # Save the personas.
     for persona_name, persona in self.personas.items():
@@ -376,12 +374,12 @@ class ReverieServer:
             next_tile, pronunciatio, description = persona.move(
               self.maze, self.personas, self.personas_tile[persona_name],
               self.curr_time)
-            movements["persona"][persona_name] = {}
-            movements["persona"][persona_name]["movement"] = next_tile
-            movements["persona"][persona_name]["pronunciatio"] = pronunciatio
-            movements["persona"][persona_name]["description"] = description
-            movements["persona"][persona_name]["chat"] = (persona
-                                                          .scratch.chat)
+            movements["persona"][persona_name] = {
+              "movement": next_tile,
+              "pronunciatio": pronunciatio,
+              "description": description,
+              "chat": persona.scratch.chat,
+            }
 
           # Include the meta information about the current stage in the
           # movements dictionary.
