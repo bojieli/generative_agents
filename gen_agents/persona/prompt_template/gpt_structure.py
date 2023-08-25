@@ -8,7 +8,7 @@ import json
 import openai
 import time
 
-from utils import openai_api_key
+from gen_agents.utils import openai_api_key
 
 openai.api_key = openai_api_key
 
@@ -251,9 +251,9 @@ def generate_prompt(curr_input, prompt_lib_file):
         curr_input = [curr_input]
     curr_input = [str(i) for i in curr_input]
 
-    f = open(prompt_lib_file, "r")
-    prompt = f.read()
-    f.close()
+    with open(prompt_lib_file, "r") as f:
+      prompt = f.read()
+
     for count, i in enumerate(curr_input):
         prompt = prompt.replace(f"!<INPUT {count}>!", i)
     if "<commentblockmarker>###</commentblockmarker>" in prompt:

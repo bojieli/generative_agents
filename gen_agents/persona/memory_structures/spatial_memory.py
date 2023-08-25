@@ -8,7 +8,7 @@ memory that aids in grounding their behavior in the game world.
 import json
 
 from gen_agents.global_methods import check_if_file_exists
-
+from gen_agents.utils import fs_storage
 
 class MemoryTree:
     def __init__(self, f_saved):
@@ -101,7 +101,7 @@ class MemoryTree:
 
 
 if __name__ == "__main__":
-    x = f"../../../../environment/frontend_server/storage/the_ville_base_LinFamily/personas/Eddy Lin/bootstrap_memory/spatial_memory.json"
+    x = f"{fs_storage}/the_ville_base_LinFamily/personas/Eddy Lin/bootstrap_memory/spatial_memory.json"
     x = MemoryTree(x)
     x.print_tree()
 

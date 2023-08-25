@@ -7,9 +7,9 @@ Description: This defines the "Reflect" module for generative agents.
 import datetime
 
 
-from persona.prompt_template.run_gpt_prompt import *
-from persona.prompt_template.gpt_structure import *
-from persona.cognitive_modules.retrieve import *
+from gen_agents.persona.prompt_template.run_gpt_prompt import *
+from gen_agents.persona.prompt_template.gpt_structure import *
+from gen_agents.persona.cognitive_modules.retrieve import *
 
 
 def generate_focal_points(persona, n=3):

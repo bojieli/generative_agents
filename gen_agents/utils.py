@@ -2,11 +2,8 @@ import os
 
 # Copy and paste your OpenAI API Key
 openai_api_key = os.environ.get('OPENAI_API_KEY')
-# Put your name
-key_owner = os.environ.get('KEY_OWNER')
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-
 
 maze_assets_loc = os.path.join(ROOT_DIR, "frontend_server/static_dirs/assets")
 env_matrix = f"{maze_assets_loc}/the_ville/matrix"
