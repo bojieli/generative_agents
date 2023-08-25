@@ -1,9 +1,10 @@
-frontend_server/settings/local.py
+gen_agents/frontend_server/settings/local.py
+gen_agents/frontend_server/storage/*
 storage/*
 static_dirs/*
 
-!storage/base_the_ville_isabella_maria_klaus/*
-!storage/base_the_ville_n25/*
+!gen_agents/frontend_server/base_the_ville_isabella_maria_klaus/*
+!gen_agents/frontend_server/base_the_ville_n25/*
 
 bin/
 include/
