@@ -399,9 +399,9 @@ class ReverieServer:
           #  "meta": {curr_time: <datetime>}}
 
           # if the folder doesn't exist, we create it first.
+          curr_move_file = f"{sim_folder}/movement/{self.step}.json"
           if not os.path.exists(os.path.dirname(curr_move_file)):
               os.makedirs(os.path.dirname(curr_move_file), exist_ok=True)
-          curr_move_file = f"{sim_folder}/movement/{self.step}.json"
           with open(curr_move_file, "w") as outfile:
             outfile.write(json.dumps(movements, indent=2))
 
