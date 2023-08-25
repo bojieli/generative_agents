@@ -1,5 +1,7 @@
 gen_agents/frontend_server/settings/local.py
 gen_agents/frontend_server/storage/*
+gen_agents/frontend_server/temp_storage/*
+
 storage/*
 static_dirs/*
 

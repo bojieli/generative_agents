@@ -6,10 +6,6 @@ Description: Wrapper functions for calling OpenAI APIs.
 """
 import openai
 
-from utils import openai_api_key
-
-openai.api_key = openai_api_key
-
 
 def ChatGPT_request(prompt):
     """
