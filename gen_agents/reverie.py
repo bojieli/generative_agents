@@ -431,6 +431,7 @@ class ReverieServer:
                     self.step += 1
                     self.curr_time += datetime.timedelta(seconds=self.sec_per_step)
 
+                    print(f"******* Step {self.step} completed.")
                     int_counter -= 1
 
             # Sleep so we don't burn our machines.
