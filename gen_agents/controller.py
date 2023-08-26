@@ -214,7 +214,7 @@ def update_environment(sim_code: str, step: int) -> None:
         with open(f"{fs_storage}/{sim_code}/movement/{step}.json") as json_file:
             response_data = json.load(json_file)
         response_data["<step>"] = step
-        return response_data
+    return response_data
 
 
 def path_tester_update(camera: Dict[str, Any]) -> None:
