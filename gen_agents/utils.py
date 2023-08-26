@@ -11,6 +11,8 @@ env_visuals = f"{maze_assets_loc}/the_ville/visuals"
 
 fs_storage = os.path.join(ROOT_DIR, "storage")
 fs_temp_storage = os.path.join(ROOT_DIR, "temp_storage")
+fs_storage_compressed = os.path.join(ROOT_DIR, "storage_compressed")
+
 
 collision_block_id = "32125"
 

@@ -8,11 +8,12 @@ import shutil
 import json
 
 from gen_agents.global_methods import find_filenames, create_folder_if_not_there
+from gen_agents.utils import fs_storage, fs_storage_compressed
 
 
 def compress(sim_code):
-  sim_storage = f"../environment/frontend_server/storage/{sim_code}"
-  compressed_storage = f"../environment/frontend_server/compressed_storage/{sim_code}"
+  sim_storage = f"{fs_storage}/{sim_code}"
+  compressed_storage = f"{fs_storage_compressed}/{sim_code}"
   persona_folder = sim_storage + "/personas"
   move_folder = sim_storage + "/movement"
   meta_file = sim_storage + "/reverie/meta.json"
