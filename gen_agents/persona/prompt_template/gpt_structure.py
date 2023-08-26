@@ -8,6 +8,8 @@ import json
 import openai
 import time
 
+import backoff
+
 from gen_agents.utils import openai_api_key
 
 openai.api_key = openai_api_key
@@ -31,6 +33,7 @@ def ChatGPT_single_request(prompt):
 # ============================================================================
 
 
+@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
 def GPT4_request(prompt):
     """
     Given a prompt and a dictionary of GPT parameters, make a request to OpenAI
@@ -50,8 +53,9 @@ def GPT4_request(prompt):
             model="gpt-4", messages=[{"role": "user", "content": prompt}]
         )
         return completion["choices"][0]["message"]["content"]
-
-    except:
+    except openai.error.RateLimitError:
+        raise
+    except BaseException:
         print("ChatGPT ERROR")
         return "ChatGPT ERROR"
 
@@ -74,8 +78,9 @@ def ChatGPT_request(prompt):
             model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}]
         )
         return completion["choices"][0]["message"]["content"]
-
-    except:
+    except openai.error.RateLimitError:
+        raise
+    except BaseException:
         print("ChatGPT ERROR")
         return "ChatGPT ERROR"
 
@@ -252,7 +257,7 @@ def generate_prompt(curr_input, prompt_lib_file):
     curr_input = [str(i) for i in curr_input]
 
     with open(prompt_lib_file, "r") as f:
-      prompt = f.read()
+        prompt = f.read()
 
     for count, i in enumerate(curr_input):
         prompt = prompt.replace(f"!<INPUT {count}>!", i)
