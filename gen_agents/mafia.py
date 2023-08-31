@@ -1,6 +1,7 @@
 import random
 import re
 import openai
+import tiktoken
 
 
 class Mafia:
@@ -15,7 +16,31 @@ class Mafia:
         self.roles = self.generate_roles()
         print(self.roles)
 
+    def shorten_prompt(self, messages):
+        max_tokens = 4096 - 300
+        encoding = tiktoken.get_encoding("cl100k_base")
+        all_contents = '\n'.join([ msg['content'] for msg in messages ])
+        num_tokens = len(encoding.encode(all_contents))
+        if num_tokens <= max_tokens:
+            return messages
+        token_overage = num_tokens - max_tokens
+
+        remove_done = False
+        new_messages = []
+        for msg in messages:
+            if remove_done:
+                new_messages.append(msg)
+            if msg['role'] == 'user':  # remove the first user messages that exceeds token limit
+                num_tokens = len(encoding.encode(msg['content']))
+                token_overage -= num_tokens
+                if token_overage <= 0:
+                    remove_done = True
+            else:  # do not remove system messages
+                new_messages.append(msg)
+        return new_messages
+
     def get_completion(self, messages):
+        messages = self.shorten_prompt(messages)
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo", messages=messages
         )
@@ -333,7 +358,7 @@ At day, all players open their eyes. The moderator first announces which player 
         if player is None:
             print("Invalid response: " + response)
             return None
-        if player <= 0 or player >= self.num_players:
+        if player <= 0 or player > self.num_players:
             print("Invalid response: " + response)
             return None
         return player
@@ -350,7 +375,7 @@ At day, all players open their eyes. The moderator first announces which player 
         if player is None:
             print("Invalid response: " + response)
             return None
-        if player <= 0 or player >= self.num_players:
+        if player <= 0 or player > self.num_players:
             print("Invalid response: " + response)
             return None
         if not self.alive[player - 1]:
@@ -401,14 +426,14 @@ At day, all players open their eyes. The moderator first announces which player 
             )
             if not to_kill:
                 continue
-            votes[to_kill] += 1
+            votes[to_kill - 1] += 1
             self.speak(
                 player,
                 "all",
                 "Player "
                 + str(player + 1)
                 + " votes "
-                + str(to_kill + 1)
+                + str(to_kill)
                 + " as suspected werewolf.",
             )
 
