@@ -10,6 +10,7 @@ class Mafia:
     num_seers = 1
     num_witches = 1
     num_hunters = 1
+    werewolves_win_if_all_others_are_killed = True
 
     def __init__(self):
         self.initialize_status()
@@ -166,25 +167,36 @@ At day, all players open their eyes. The moderator first announces which player 
         print(self.roles)
 
     def game_ended(self):
-        num_alive_villagers = 0
-        for i in range(0, self.num_players):
-            if self.roles[i] == "villager" and self.alive[i]:
-                num_alive_villagers += 1
-        if num_alive_villagers == 0:
-            self.print_game_end_message(
-                "All villagers are dead. Game ended. The werewolves win."
-            )
-            return True
+        if self.werewolves_win_if_all_others_are_killed:  # the hard mode for werewolves
+            num_alive_villagers = 0
+            for i in range(0, self.num_players):
+                if self.roles[i] in ["villager", "seer", "witch", "hunter"] and self.alive[i]:
+                    num_alive_villagers += 1
+            if num_alive_villagers == 0:
+                self.print_game_end_message(
+                    "All villagers, seers, witches and hunters are dead. Game ended. The werewolves win."
+                )
+                return True
+        else:  # the easy mode for werewolves
+            num_alive_villagers = 0
+            for i in range(0, self.num_players):
+                if self.roles[i] == "villager" and self.alive[i]:
+                    num_alive_villagers += 1
+            if num_alive_villagers == 0:
+                self.print_game_end_message(
+                    "All villagers are dead. Game ended. The werewolves win."
+                )
+                return True
 
-        num_alive_special_roles = 0
-        for i in range(0, self.num_players):
-            if self.roles[i] in ["seer", "witch", "hunter"] and self.alive[i]:
-                num_alive_special_roles += 1
-        if num_alive_special_roles == 0:
-            self.print_game_end_message(
-                "All special roles are dead. Game ended. The werewolves win."
-            )
-            return True
+            num_alive_special_roles = 0
+            for i in range(0, self.num_players):
+                if self.roles[i] in ["seer", "witch", "hunter"] and self.alive[i]:
+                    num_alive_special_roles += 1
+            if num_alive_special_roles == 0:
+                self.print_game_end_message(
+                    "All special roles are dead. Game ended. The werewolves win."
+                )
+                return True
 
         num_alive_werewolves = 0
         for i in range(0, self.num_players):
