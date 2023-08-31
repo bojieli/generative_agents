@@ -110,13 +110,18 @@ def initialize_status():
     witches_antidote_used = [False for i in range(0, num_players)]
 
 
+def print_game_end_message(message):
+    print(message)
+    print(roles)
+
+
 def game_ended():
     num_alive_villagers = 0
     for i in range(0, num_players):
         if roles[i] == 'villager' and alive[i]:
             num_alive_villagers += 1
     if num_alive_villagers == 0:
-        print('All villagers are dead. Game ended. The werewolves win.')
+        print_game_end_message('All villagers are dead. Game ended. The werewolves win.')
         return True
 
     num_alive_special_roles = 0
@@ -124,11 +129,17 @@ def game_ended():
         if roles[i] in ['seer', 'witch', 'hunter'] and alive[i]:
             num_alive_special_roles += 1
     if num_alive_special_roles == 0:
-        print('All special roles are dead. Game ended. The werewolves win.')
+        print_game_end_message('All special roles are dead. Game ended. The werewolves win.')
+        return True
 
     num_alive_werewolves = 0
     for i in range(0, num_players):
-        if roles[i] == '':
+        if roles[i] == 'werewolf' and alive[i]:
+            num_alive_werewolves += 1
+    if num_alive_werewolves == 0:
+        print_game_end_message('All werewolves are dead. Game ended. The villagers win.')
+        return True
+
     return False
 
 
@@ -153,7 +164,7 @@ def werewolves_kill():
         player = input_living_player(i, 'The list of living werewolves is ' + list_werewolves + '. Please pick one living player to kill.')
         if player is int:
             votes[player - 1] += 1
-            speak(i, 'werewolf', 'Werewolf wants to kill ' + str(player) + ' at this night')
+            speak(i, 'werewolf', 'Werewolf ' + str(i + 1) + ' wants to kill ' + str(player) + ' at this night.')
 
     highest_vote = 0
     for i in range(0, num_players):
@@ -258,18 +269,46 @@ def say_last_word(player):
     speak(player, 'all', response)
 
 
-def discuss_werewolves():
-    for i in range(0, num_players):
+def iterate_living_players():
+    dead_player = 0
+    if len(dead_players_in_this_round) > 0:
+        dead_player = dead_players_in_this_round[0]
+    living_players = []
+    for i in range(dead_player, num_players):
         if alive[i]:
-            command = 'It is your turn to discuss who are the werewolves according to the past conversions.'
-            if roles[i] == 'werewolf':
-                command += ' Because you are a werewolf, please hide your identity.'
-            response = player_turn(i, command)
-            speak(i, 'all', response)
+            living_players.append(i)
+    for i in range(0, dead_player):
+        if alive[i]:
+            living_players.append(i)
+    return living_players
+
+
+def discuss_werewolves():
+    for player in iterate_living_players():
+        command = 'It is your turn to discuss who are the werewolves according to the past conversions.'
+        if roles[player] == 'werewolf':
+            command += ' Because you are a werewolf, please hide your identity.'
+        response = player_turn(player, command)
+        speak(player, 'all', response)
 
 
 def vote_to_kill():
-    pass
+    votes = [0 for i in range(0, num_players)]
+    for player in iterate_living_players():
+        to_kill = input_living_player(player, 'Please pick your suspected living werewolf.')
+        if not to_kill:
+            continue
+        votes[to_kill] += 1
+        speak(player, 'all', 'Player ' + str(player + 1) + ' votes ' + str(to_kill + 1) + ' as suspected werewolf.')
+
+    highest_vote = 0
+    for i in range(0, num_players):
+        if votes[i] > votes[highest_vote]
+            highest_vote = i
+    if votes[highest_vote] > 0:
+        alive[highest_vote] = False
+        dead_players_in_this_round.append(highest_vote)
+        speak('Moderator', 'all', 'Player ' + str(highest_vote + 1) + ' is eliminated due to receiving the highest vote as suspected werewolf at this day.')
 
 
 def initialize_round():
@@ -299,7 +338,6 @@ def run_game():
         discuss_werewolves()
         # vote the player to kill
         vote_to_kill()
-        announce_deaths()
         if game_ended():
             return
 
