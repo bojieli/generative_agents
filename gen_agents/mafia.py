@@ -54,8 +54,8 @@ At day, all players open their eyes. The moderator first announces which player 
                 or record["visibility"] == "all"
             ):
                 speaker = record["speaker"]
-                if speaker is int:
-                    speaker = "Player " + int(speaker + 1)
+                if type(speaker) is int:
+                    speaker = "Player " + str(speaker + 1)
                 content = (
                     "Day "
                     + str(self.current_day)
@@ -184,7 +184,7 @@ At day, all players open their eyes. The moderator first announces which player 
                 "content": content,
             }
         )
-        if speaker is int:
+        if type(speaker) is int:
             speaker_str = "Player " + str(speaker + 1)
         else:
             speaker_str = speaker
@@ -205,7 +205,7 @@ At day, all players open their eyes. The moderator first announces which player 
                 + list_werewolves
                 + ". Please pick one living player to kill.",
             )
-            if to_kill is int:
+            if type(to_kill) is int:
                 votes[to_kill - 1] += 1
                 self.speak(
                     i,
@@ -258,7 +258,7 @@ At day, all players open their eyes. The moderator first announces which player 
                 witch,
                 "You are the witch and you have a chance to kill any living player using the poison. You have only one chance to use the poison throughout the game. If you want to use the poison, output the player number to be killed. Otherwise, output None.",
             )
-            if player is int:
+            if type(player) is int:
                 self.alive[player - 1] = False
                 self.dead_players_in_this_round.append(player - 1)
                 self.witches_poison_used[witch] = True
@@ -271,7 +271,7 @@ At day, all players open their eyes. The moderator first announces which player 
                 witch,
                 "Player "
                 + str(self.dead_players_in_this_round[0] + 1)
-                + " is just killed by the werewolves. You are the witch and have a chance to rescue the player killed by the werewolves. You have only one chance to use the antidote throughout the game. Do you want to rescue the player? Output Yes or No only.",
+                + " is just killed by the werewolves. You are the witch and have a chance to rescue the player killed by the werewolves. You have only one chance to use the antidote throughout the game. Do you want to rescue the player? Output Yes or No only, do not output any other words.",
             )
             if "yes" in response.lower():
                 self.speak(
@@ -290,7 +290,7 @@ At day, all players open their eyes. The moderator first announces which player 
         elif witch in self.dead_players_in_this_round:
             response = self.player_turn(
                 witch,
-                "You are just killed by the werewolves. You are the witch and have a chance to rescue yourself. You have only one chance to use the antidote throughout the game. Do you want to rescue yourself? Output Yes or No only.",
+                "You are just killed by the werewolves. You are the witch and have a chance to rescue yourself. You have only one chance to use the antidote throughout the game. Do you want to rescue yourself? Output Yes or No only, do not output any other words.",
             )
             if "yes" in response.lower():
                 self.speak(
@@ -318,7 +318,7 @@ At day, all players open their eyes. The moderator first announces which player 
             player,
             "You are the hunter and you are just killed. You have the chance to kill one living player who is suspected to be werewolf.",
         )
-        if player is int:
+        if type(player) is int:
             self.alive[player - 1] = False
             self.dead_players_in_this_round.append(player - 1)
             self.speak(
@@ -328,7 +328,7 @@ At day, all players open their eyes. The moderator first announces which player 
             )
 
     def input_any_player(self, player, command):
-        response = self.player_turn(player, command + " Output the player number only.")
+        response = self.player_turn(player, command + " Output the player number only, do not output any other words.")
         player = self.parse_int(response)
         if player is None:
             print("Invalid response: " + response)
@@ -344,7 +344,7 @@ At day, all players open their eyes. The moderator first announces which player 
             command
             + " The list of living players: "
             + self.list_living_players()
-            + ". Output the player number only.",
+            + ". Output the player number only, do not output any other words.",
         )
         player = self.parse_int(response)
         if player is None:
