@@ -104,8 +104,6 @@ At day, all players open their eyes. The moderator first announces which player 
         )
 
         response = self.get_completion(messages)
-        print(messages[-1])
-        print(response)
         return response
 
     def parse_int(self, response):
@@ -356,7 +354,6 @@ At day, all players open their eyes. The moderator first announces which player 
         response = self.player_turn(player, command + " Output the player number only, do not output any other words.")
         player = self.parse_int(response)
         if player is None:
-            print("Invalid response: " + response)
             return None
         if player <= 0 or player > self.num_players:
             print("Invalid response: " + response)
@@ -373,13 +370,12 @@ At day, all players open their eyes. The moderator first announces which player 
         )
         player = self.parse_int(response)
         if player is None:
-            print("Invalid response: " + response)
             return None
         if player <= 0 or player > self.num_players:
             print("Invalid response: " + response)
             return None
         if not self.alive[player - 1]:
-            print("Invalid response, player is not self.alive: " + response)
+            print("Invalid response, player is not alive: " + response)
             return None
         return player
 
@@ -422,7 +418,7 @@ At day, all players open their eyes. The moderator first announces which player 
         votes = [0 for i in range(0, self.num_players)]
         for player in self.iterate_living_players():
             to_kill = self.input_living_player(
-                player, "Please pick your suspected living werewolf."
+                player, "Based on the discussion, please pick your suspected living werewolf."
             )
             if not to_kill:
                 continue
