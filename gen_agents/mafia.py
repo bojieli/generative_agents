@@ -18,7 +18,7 @@ class Mafia:
         print(self.roles)
 
     def shorten_prompt(self, messages):
-        max_tokens = 4096 - 300
+        max_tokens = 4096 - 500
         encoding = tiktoken.get_encoding("cl100k_base")
         all_contents = '\n'.join([ msg['content'] for msg in messages ])
         num_tokens = len(encoding.encode(all_contents))
@@ -42,11 +42,16 @@ class Mafia:
 
     def get_completion(self, messages):
         messages = self.shorten_prompt(messages)
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=messages
-        )
-
-        return completion["choices"][0]["message"]["content"]
+        max_retries = 3
+        for i in range(0, max_retries):
+            try:
+                completion = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo", messages=messages, request_timeout=30
+                )
+                return completion["choices"][0]["message"]["content"]
+            except Exception as e:
+                print(e)
+        return ""
 
     def player_turn(self, player, command):
         game_intro = """
